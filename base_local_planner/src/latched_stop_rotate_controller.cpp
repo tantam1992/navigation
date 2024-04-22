@@ -179,10 +179,10 @@ bool LatchedStopRotateController::rotateToGoal(
   ros::param::get("/move_base/DWAPlannerROS/sim_time", previous_sim_time);
   // ROS_INFO("now_sim_time: %f", previous_sim_time);
   
-  // Set the sim_time to 1.2
+  // Set the sim_time to 1.1
   dynamic_reconfigure::DoubleParameter double_param;
   double_param.name = "sim_time";
-  double_param.value = 1.2;
+  double_param.value = 1.1;
   config.doubles.push_back(double_param);
   srv.request.config = config;
   if (!client.call(srv)) {
