@@ -22,6 +22,7 @@ find_package(catkin REQUIRED
             tf2_geometry_msgs
             tf2_ros
             voxel_grid
+            dynamic_reconfigure
         )
 
 find_package(Boost REQUIRED
@@ -55,6 +56,7 @@ generate_messages(
 # dynamic reconfigure
 generate_dynamic_reconfigure_options(
     cfg/BaseLocalPlanner.cfg
+    /home/u/tko_ws/src/navigation/dwa_local_planner/cfg/DWAPlanner.cfg
 )
 
 catkin_package(

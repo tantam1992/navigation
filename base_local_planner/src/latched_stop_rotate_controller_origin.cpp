@@ -19,14 +19,6 @@
 
 #include <tf2/utils.h>
 
-// new
-#include <ros/ros.h>
-#include <ros/master.h>
-#include <dynamic_reconfigure/server.h>
-#include <dynamic_reconfigure/Reconfigure.h>
-#include <dynamic_reconfigure/Config.h>
-#include <dynamic_reconfigure/DoubleParameter.h>
-
 namespace base_local_planner {
 
 LatchedStopRotateController::LatchedStopRotateController(const std::string& name) {
@@ -163,33 +155,7 @@ bool LatchedStopRotateController::rotateToGoal(
     base_local_planner::LocalPlannerLimits& limits,
     boost::function<bool (Eigen::Vector3f pos,
                           Eigen::Vector3f vel,
-                          Eigen::Vector3f vel_samples)> obstacle_check
-    ) {
-
-  ROS_INFO("rotateToGoal started");
-
-  // Create a dynamic reconfigure client
-  ros::NodeHandle nh;
-  ros::ServiceClient client = nh.serviceClient<dynamic_reconfigure::Reconfigure>("/move_base/DWAPlannerROS/set_parameters");
-  // Create a dynamic reconfigure message
-  dynamic_reconfigure::Reconfigure srv;
-  dynamic_reconfigure::Config config;
-  // Get the current sim_time
-  double previous_sim_time;
-  ros::param::get("/move_base/DWAPlannerROS/sim_time", previous_sim_time);
-  // ROS_INFO("now_sim_time: %f", previous_sim_time);
-  
-  // Set the sim_time to 1.0
-  dynamic_reconfigure::DoubleParameter double_param;
-  double_param.name = "sim_time";
-  double_param.value = 1.0;
-  config.doubles.push_back(double_param);
-  srv.request.config = config;
-  if (!client.call(srv)) {
-    ROS_ERROR("Failed to call dynamic reconfigure service");
-  }
-  // ROS_INFO("now_sim_time:1.0");
-
+                          Eigen::Vector3f vel_samples)> obstacle_check) {
   double yaw = tf2::getYaw(global_pose.pose.orientation);
   double vel_yaw = tf2::getYaw(robot_vel.pose.orientation);
   cmd_vel.linear.x = 0;
@@ -219,17 +185,6 @@ bool LatchedStopRotateController::rotateToGoal(
       Eigen::Vector3f(robot_vel.pose.position.x, robot_vel.pose.position.y, vel_yaw),
       Eigen::Vector3f( 0.0, 0.0, v_theta_samp));
 
-  // Set the sim_time to previous_sim_time
-  config.doubles.clear();
-  double_param.name = "sim_time";
-  double_param.value = previous_sim_time;
-  config.doubles.push_back(double_param);
-  srv.request.config = config;
-  if (!client.call(srv)) {
-    ROS_ERROR("Failed to call dynamic reconfigure service");
-  }
-  // ROS_INFO("now_sim_time: %f", previous_sim_time);
-  
   if (valid_cmd) {
     ROS_DEBUG_NAMED("dwa_local_planner", "Moving to desired goal orientation, th cmd: %.2f, valid_cmd: %d", v_theta_samp, valid_cmd);
     cmd_vel.angular.z = v_theta_samp;
@@ -238,6 +193,7 @@ bool LatchedStopRotateController::rotateToGoal(
   ROS_WARN("Rotation cmd in collision");
   cmd_vel.angular.z = 0.0;
   return false;
+
 }
 
 bool LatchedStopRotateController::computeVelocityCommandsStopRotate(geometry_msgs::Twist& cmd_vel,
