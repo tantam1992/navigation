@@ -61,7 +61,7 @@ namespace dwa_local_planner {
         config.use_dwa,
         sim_period_);
 
-    ROS_INFO("the sim_time is %f ", config.sim_time);
+    // ROS_INFO("the sim_time is %f ", config.sim_time);
 
     double resolution = planner_util_->getCostmap()->getResolution();
     path_distance_bias_ = resolution * config.path_distance_bias;
