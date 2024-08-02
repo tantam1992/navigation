@@ -166,7 +166,7 @@ bool LatchedStopRotateController::rotateToGoal(
                           Eigen::Vector3f vel_samples)> obstacle_check
     ) {
 
-  ROS_INFO("rotateToGoal started");
+  // ROS_INFO("rotateToGoal started");
 
   // Create a dynamic reconfigure client
   ros::NodeHandle nh;
